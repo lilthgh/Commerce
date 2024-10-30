@@ -1,0 +1,67 @@
+{% extends "auctions/layout.html" %}  
+
+{% block body %}
+
+
+{% if  not listing.active and not owner  %}  
+<div class="alert alert-success" role="alert">  
+      Congratulations, you won the auction!  
+</div>    
+{% endif %}  
+  {% if owner and listing.active %}  
+    <a class="btn btn-info" id="close-auction" href="{% url 'closeAuction' listing.id %}">Close Auction</a>  
+  {% endif %}  
+</div>
+ 
+ <div class="container">  
+  {% if message %}  
+  {% if update %}  
+  <div class="alert alert-success" role="alert">  
+  {{ message }}  
+  </div> {% else %}  
+  <div class="alert alert-danger" role="alert">  
+  {{ message }}  
+  </div> 
+  {% endif %}  
+  {% endif %}  
+  <span class="badge badge-pill badge-warning">{{ listing.category }}</span>  
+  <h1>{{ listing.title }}</h1>   
+    
+  {% if isListingInWatchlist %}  
+      <a class="btn btn-danger" href="{% url 'removewatchlist' listing.id %}"> Remove from watchlist </a>  
+  {% else %}  
+    <a class="btn btn-primary" href="{% url 'addwatchlist' listing.id %}"> Add to watchlist </a>  
+  {% endif %}  
+
+  <h4>Shoes: {{ listing.title }}</h4>  
+  <img src="{{ listing.image }}" alt="{{ listing.title }}" height="600px">  
+  <p>{{ listing.description }}<br/> Owner: {{ listing.owner }}</p>  
+  <h6>${{ listing.price.bid }}</h6>  
+  {% if user.is_authenticated %}  
+  <form action="{% url 'addBid' id=listing.id %}" method="POST">  
+  {% csrf_token %}  
+  <input type="number" min="0" name="newBid" placeholder="Add Bid">  
+  <input class="btn btn-primary" type="submit" value="Add">  
+  </form>  
+  {% endif %}  
+  <p>{{ message }}</p>  
+  <div class="row mx-3">  
+  <h6>Add comment:</h6>  
+  {% if user.is_authenticated %}  
+  <form action="{% url 'addcomment' id=listing.id %}" method="POST">  
+  {% csrf_token %}  
+  <input type="text" name="message" placeholder="Add comment">  
+  <input class="btn btn-primary" type="submit" value="Add">  
+  </form>  
+  {% endif %}  
+  </div>  
+  <ul class="list-group">  
+  {% for comment in comments %}  
+  <li class="list-group-item">  
+  <p>{{ comment.author }} commented:</p>{{ comment.message }}  
+  </li>  
+  {% endfor %}  
+  </ul>  
+ </div>  
+ 
+ {% endblock %}
